@@ -61,9 +61,9 @@ try {
     $configPath = Join-Path $scriptDir "config"
     Set-Location $configPath
     
-    docker compose up -d 2>&1 | Out-Null
+    $composeOutput = docker compose up -d 2>&1
     if ($LASTEXITCODE -ne 0) {
-        throw "Docker compose failed to start"
+        throw "Docker compose failed to start. Output: $composeOutput"
     }
     
     Write-Host "      [OK] SRS container started" -ForegroundColor Green
@@ -96,7 +96,7 @@ try {
     Set-Location $scriptDir
 } catch {
     Write-Host "      [FAIL] Failed to start SRS service!" -ForegroundColor Red
-    Write-Host "      Error: $_" -ForegroundColor Yellow
+    Write-Host "      Error: $($_.Exception.Message)" -ForegroundColor Yellow
     Set-Location $scriptDir
     Read-Host "Press Enter to exit"
     exit 1
