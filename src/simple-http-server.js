@@ -263,6 +263,25 @@ function broadcast(data) {
     });
 }
 
+// Timeout for marking a device as offline (in milliseconds)
+const DEVICE_OFFLINE_TIMEOUT = 7 * 1000; // 7 seconds
+
+// Periodically check for device timeouts
+setInterval(() => {
+    const now = new Date();
+    Object.values(devices).forEach(device => {
+        if (device.isOnline) {
+            const lastSeen = new Date(device.lastSeen);
+            if (now - lastSeen > DEVICE_OFFLINE_TIMEOUT) {
+                console.log(`⌛ Device ${device.id} timed out. Marking as offline.`);
+                device.isOnline = false;
+                saveDevicesToFile();
+                broadcastToBrowsers({ type: 'deviceUpdate', payload: device });
+            }
+        }
+    });
+}, 5 * 1000); // Check every 5 seconds
+
 // Initialize file transfer service
 const fileTransferService = new FileTransferService(
     path.join(__dirname, 'video'),
