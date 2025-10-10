@@ -22,22 +22,22 @@
     },
     "MP6MB25N6104762": {
         "id": "MP6MB25N6104762",
-        "lastSeen": "2025-10-10T03:07:05.121Z",
+        "lastSeen": "2025-10-10T06:21:12.684Z",
         "isOnline": true,
         "status": {
-            "batteryLevel": 63,
-            "fileServerEnabled": true,
+            "batteryLevel": 100,
+            "fileServerEnabled": false,
             "fileServerPort": 8889,
             "isCharging": true,
             "isOnline": true,
             "isRecording": false,
-            "isStreaming": false,
+            "isStreaming": true,
             "isStreamingReady": true,
             "recordingDurationMs": 0,
             "streamKey": "MP6MB25N6104762",
-            "wifiSignalStrength": -65
+            "wifiSignalStrength": -29
         },
-        "ip": "192.168.16.182",
+        "ip": "192.168.137.246",
         "recordingStartTime": null,
         "deviceName": "device1"
     }

@@ -84,6 +84,61 @@ body::before {
     background-clip: text;
 }
 
+.server-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+#ip-address-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.ip-line {
+    display: flex;
+    align-items: center;
+}
+
+.ip-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    min-width: 120px;
+    text-align: right;
+    margin-right: 0.5rem;
+}
+
+.ip-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.details-btn {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--primary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.details-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 .navbar-stats {
     display: flex;
     gap: 1.5rem;
@@ -1319,6 +1374,142 @@ video {
     border-color: #fb923c;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#network-interfaces-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#network-interfaces-table th,
+#network-interfaces-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+#network-interfaces-table th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+#network-interfaces-table td {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+#network-interfaces-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#network-interfaces-table .tag {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+}
+
+#network-interfaces-table .tag.physical { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+#network-interfaces-table .tag.hotspot { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+#network-interfaces-table .tag.virtual { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+
+
+/* Custom Scrollbar for Modal Body */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(17, 24, 39, 0.5);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5563;
 }
 
 

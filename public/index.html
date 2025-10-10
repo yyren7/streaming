@@ -19,7 +19,17 @@
             <div class="navbar-brand">
                 <h1 data-i18n="title">⚡ Thinklet Monitor Center</h1>
                 <div class="server-info">
-                    <span data-i18n="serverAddress">Server Address</span>: <span id="server-ip">loading...</span>
+                    <div id="ip-address-container">
+                        <div class="ip-line" id="primary-ip-line">
+                            <span class="ip-label" data-i18n="serverAddress">Server Address</span>:
+                            <span id="server-ip" class="ip-value">loading...</span>
+                        </div>
+                        <div class="ip-line" id="hotspot-ip-line" style="display: none;">
+                            <span class="ip-label" data-i18n="hotspotAddress">Hotspot Address</span>:
+                            <span id="hotspot-ip" class="ip-value"></span>
+                        </div>
+                    </div>
+                    <button id="network-details-btn" class="details-btn" data-i18n="details">Details</button>
                 </div>
             </div>
             <div class="navbar-stats">
@@ -49,6 +59,30 @@
             <div class="empty-state">
                 <div class="empty-state-icon">📱</div>
                 <div class="empty-state-text" data-i18n="noDevices">No devices connected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Details Modal -->
+    <div id="network-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="networkInterfaces">Network Interfaces</h2>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table id="network-interfaces-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="interfaceName">Interface Name</th>
+                            <th data-i18n="ipAddress">IP Address</th>
+                            <th data-i18n="type">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Content will be injected by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

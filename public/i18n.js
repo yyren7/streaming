@@ -4,7 +4,15 @@ const i18n = {
         serverAddress: 'Server Address',
         onlineDevices: 'Online Devices',
         totalDevices: 'Total Devices',
+        details: 'Details',
+        networkInterfaces: 'Network Interfaces',
+        interfaceName: 'Interface Name',
+        ipAddress: 'IP Address',
+        type: 'Type',
+        hotspotAddress: 'Hotspot Address',
+        // Device card specific translations
         noDevices: 'No devices connected',
+        deviceIdLabel: 'Device ID',
         connecting: 'Connecting...',
         connected: 'Connected',
         disconnected: 'Disconnected',
@@ -71,17 +79,26 @@ const i18n = {
         editDeviceName: 'Edit Device Name',
         promptDeviceName: 'Enter new device name:',
         deviceNameUpdated: 'Device name updated',
-        deviceIdLabel: 'Device ID'
+        deviceIdLabel: 'Device ID',
+        hotspotAddress: 'Hotspot Address'
     },
     zh: {
         title: '⚡ Thinklet 监控中心',
         serverAddress: '服务器地址',
         onlineDevices: '在线设备',
-        totalDevices: '设备总数',
-        noDevices: '暂无设备连接',
+        totalDevices: '总设备',
+        details: '详细信息',
+        networkInterfaces: '网络接口',
+        interfaceName: '接口名称',
+        ipAddress: 'IP 地址',
+        type: '类型',
+        hotspotAddress: '热点地址',
+        // Device card specific translations
+        noDevices: '没有连接的设备',
+        deviceIdLabel: '设备 ID',
         connecting: '连接中...',
         connected: '已连接',
-        disconnected: '连接已断开',
+        disconnected: '已断开',
         online: '在线',
         offline: '离线',
         device: '设备',
@@ -145,14 +162,23 @@ const i18n = {
         editDeviceName: '编辑设备名称',
         promptDeviceName: '请输入新的设备名称：',
         deviceNameUpdated: '设备名称已更新',
-        deviceIdLabel: '设备ID'
+        deviceIdLabel: '设备ID',
+        hotspotAddress: '热点地址'
     },
     ja: {
         title: '⚡ Thinklet モニターセンター',
         serverAddress: 'サーバーアドレス',
         onlineDevices: 'オンラインデバイス',
-        totalDevices: 'デバイス総数',
+        totalDevices: '総デバイス',
+        details: '詳細',
+        networkInterfaces: 'ネットワークインターフェース',
+        interfaceName: 'インターフェース名',
+        ipAddress: 'IPアドレス',
+        type: 'タイプ',
+        hotspotAddress: 'ホットスポットアドレス',
+        // Device card specific translations
         noDevices: 'デバイスが接続されていません',
+        deviceIdLabel: 'デバイスID',
         connecting: '接続中...',
         connected: '接続済み',
         disconnected: '切断されました',
@@ -219,6 +245,7 @@ const i18n = {
         editDeviceName: 'デバイス名を編集',
         promptDeviceName: '新しいデバイス名を入力してください：',
         deviceNameUpdated: 'デバイス名が更新されました',
-        deviceIdLabel: 'デバイスID'
+        deviceIdLabel: 'デバイスID',
+        hotspotAddress: 'ホットスポットアドレス'
     }
 };

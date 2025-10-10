@@ -45,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const connectionStatus = document.getElementById('connection-status');
     const connectionText = document.getElementById('connection-text');
     const serverIpElement = document.getElementById('server-ip');
+    const hotspotIpElement = document.getElementById('hotspot-ip');
+    hotspotIpElement.classList.add('ip-value'); // Ensure consistent styling
+    const hotspotIpLine = document.getElementById('hotspot-ip-line');
+    const networkModal = document.getElementById('network-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const networkDetailsBtn = document.getElementById('network-details-btn');
+    const networkInterfacesTableBody = document.querySelector('#network-interfaces-table tbody');
 
     let statusTimeout; // Timer for hiding status
 
@@ -127,11 +134,66 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/server-ip');
             const data = await response.json();
             serverIpElement.textContent = data.ip;
+
+            if (data.hotspot) {
+                hotspotIpElement.textContent = data.hotspot;
+                hotspotIpLine.style.display = 'flex'; // Show the hotspot line
+            } else {
+                hotspotIpLine.style.display = 'none'; // Hide the hotspot line
+            }
         } catch (error) {
             console.error('Failed to fetch server IP:', error);
             serverIpElement.textContent = 'Error';
+            hotspotIpLine.style.display = 'none';
         }
     }
+
+    // Fetch and display network interfaces
+    async function fetchNetworkInterfaces() {
+        try {
+            const response = await fetch('/network-interfaces');
+            const interfaces = await response.json();
+            
+            networkInterfacesTableBody.innerHTML = ''; // Clear existing rows
+
+            interfaces.forEach(iface => {
+                const row = document.createElement('tr');
+                
+                let tags = '';
+                if (iface.isPhysical) tags += `<span class="tag physical">Physical</span>`;
+                if (iface.isHotspot) tags += `<span class="tag hotspot">Hotspot</span>`;
+                if (iface.isVirtual) tags += `<span class="tag virtual">Virtual</span>`;
+
+                row.innerHTML = `
+                    <td>${iface.name}</td>
+                    <td>${iface.address}</td>
+                    <td>${tags}</td>
+                `;
+                networkInterfacesTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Failed to fetch network interfaces:', error);
+            networkInterfacesTableBody.innerHTML = `<tr><td colspan="3">Failed to load data.</td></tr>`;
+        }
+    }
+
+    // Modal control
+    function openModal() {
+        fetchNetworkInterfaces(); // Refresh data every time modal is opened
+        networkModal.classList.add('show');
+    }
+
+    function closeModal() {
+        networkModal.classList.remove('show');
+    }
+
+    networkDetailsBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    networkModal.addEventListener('click', (event) => {
+        if (event.target === networkModal) {
+            closeModal();
+        }
+    });
 
     // Language switch event
     const langMenuBtn = document.getElementById('lang-menu-btn');

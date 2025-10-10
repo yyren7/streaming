@@ -57,41 +57,121 @@ const MIME_TYPES = {
     '.wasm': 'application/wasm'
 };
 
-function getLocalIpAddress() {
-    const interfaces = os.networkInterfaces();
-
-    // Pass 1: Prioritize Wi-Fi interfaces
-    for (const name of Object.keys(interfaces)) {
-        if (name.toLowerCase().includes('wi-fi') || name.toLowerCase().includes('wireless')) {
-            for (const iface of interfaces[name]) {
-                if (iface.family === 'IPv4' && !iface.internal) {
-                    return iface.address; // Return the first Wi-Fi IP found
+async function getLocalIpAddresses() {
+    try {
+        const interfaces = os.networkInterfaces();
+        
+        // Keywords for virtual adapters (to exclude)
+        const virtualAdapterKeywords = [
+            'virtual', 'vmware', 'vbox', 'virtualbox', 'hyper-v', 
+            'docker', 'vethernet', 'bridge', 'tap', 'tun', 
+            'zerotier', 'hamachi', 'vpn', 'loopback'
+        ];
+        
+        // Keywords for physical adapters (to prioritize)
+        const physicalAdapterKeywords = [
+            'wi-fi', 'wifi', 'wlan', 'wireless', 'ethernet', 'eth', 'en0', 'en1'
+        ];
+        
+        // Keywords for hotspots
+        const hotspotKeywords = [
+            'hotspot', 'ap', 'access point', 'local area connection', '本地连接'
+        ];
+        
+        const candidates = [];
+        
+        // Collect all candidate IP addresses
+        for (const interfaceName in interfaces) {
+            const iface = interfaces[interfaceName];
+            
+            for (const alias of iface) {
+                if (alias.family === 'IPv4' && !alias.internal && alias.address !== '127.0.0.1') {
+                    const lowerName = interfaceName.toLowerCase();
+                    
+                    const isVirtual = virtualAdapterKeywords.some(keyword => 
+                        lowerName.includes(keyword.toLowerCase())
+                    );
+                    
+                    const isPhysical = physicalAdapterKeywords.some(keyword => 
+                        lowerName.includes(keyword.toLowerCase())
+                    );
+                    
+                    const isHotspot = hotspotKeywords.some(keyword => 
+                        lowerName.includes(keyword.toLowerCase())
+                    );
+                    
+                    const isWindowsHotspot = alias.address.startsWith('192.168.137.');
+                    
+                    candidates.push({
+                        name: interfaceName,
+                        address: alias.address,
+                        isVirtual: isVirtual,
+                        isPhysical: isPhysical,
+                        isHotspot: isHotspot || isWindowsHotspot
+                    });
                 }
             }
         }
-    }
-
-    // Pass 2: Fallback to any non-internal IPv4 address
-    for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]) {
-            // Skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-            if (iface.family === 'IPv4' && !iface.internal) {
-                return iface.address;
-            }
+        
+        console.log('🔍 Found all network interfaces:');
+        candidates.forEach(c => {
+            const tags = [];
+            if (c.isVirtual) tags.push('Virtual');
+            if (c.isPhysical) tags.push('Physical');
+            if (c.isHotspot) tags.push('Hotspot');
+            console.log(`   - ${c.name}: ${c.address} ${tags.length > 0 ? '(' + tags.join(', ') + ')' : ''}`);
+        });
+        
+        // Find hotspot and primary addresses
+        const hotspotAdapter = candidates.find(c => c.isHotspot && !c.isVirtual);
+        let primaryAdapter = candidates.find(c => c.isPhysical && !c.isVirtual && !c.isHotspot);
+        
+        if (!primaryAdapter) {
+            primaryAdapter = candidates.find(c => !c.isVirtual && !c.isHotspot);
         }
+        
+        const result = {
+            primary: primaryAdapter ? primaryAdapter.address : 'IP not found',
+            hotspot: hotspotAdapter ? hotspotAdapter.address : null,
+            allInterfaces: candidates 
+        };
+        
+        if (primaryAdapter) {
+            console.log(`✅ Primary Network Interface: ${primaryAdapter.name} - ${primaryAdapter.address}`);
+        }
+        if (hotspotAdapter) {
+            console.log(`📶 Hotspot Interface: ${hotspotAdapter.name} - ${hotspotAdapter.address}`);
+        }
+        
+        return result;
+        
+    } catch (err) {
+        console.error('❌ Could not get local IP addresses:', err.message);
     }
 
-    return '0.0.0.0';
+    return { primary: 'IP not found', hotspot: null, allInterfaces: [] };
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     const requestUrl = new URL(req.url, `http://${req.headers.host}`);
     const pathname = requestUrl.pathname;
 
     // API endpoint to get server IP
     if (pathname === '/server-ip' && req.method === 'GET') {
+        const ipAddresses = await getLocalIpAddresses();
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ip: getLocalIpAddress() }));
+        res.end(JSON.stringify({ 
+            ip: ipAddresses.primary,
+            hotspot: ipAddresses.hotspot 
+        }));
+        return;
+    }
+
+    // API endpoint to get all network interfaces
+    if (pathname === '/network-interfaces' && req.method === 'GET') {
+        const ipAddresses = await getLocalIpAddresses();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(ipAddresses.allInterfaces));
         return;
     }
 
@@ -475,10 +555,14 @@ wss.on('connection', ws => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
     console.log(`✅ HTTP server started on port ${PORT}`);
-    const ipAddress = getLocalIpAddress();
-    console.log(`🔗 Open http://${ipAddress}:${PORT} in your browser`);
+    const ipAddresses = await getLocalIpAddresses();
+    console.log(`🔗 Primary Network Address: http://${ipAddresses.primary}:${PORT}`);
+    if (ipAddresses.hotspot) {
+        console.log(`📶 Hotspot Address: http://${ipAddresses.hotspot}:${PORT}`);
+        console.log(`   (Other devices can connect to your hotspot at this address)`);
+    }
     console.log(`📁 Devices file: ${DEVICES_FILE}`);
     console.log(`📂 Public directory: ${PUBLIC_DIR}`);
     console.log(`📹 Video directory: ${VIDEO_DIR}`);
