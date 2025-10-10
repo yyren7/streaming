@@ -485,6 +485,10 @@ wss.on('connection', ws => {
                 // Check if device was offline before (to detect online transition)
                 const wasOffline = !devices[deviceId] || !devices[deviceId].isOnline;
                 
+                // Check if device IP has changed (for updating paused tasks)
+                const previousIp = devices[deviceId]?.ip;
+                const ipChanged = ip && previousIp && ip !== previousIp;
+                
                 // Track recording start time for accurate duration calculation
                 const previousDevice = devices[deviceId];
                 const wasRecording = previousDevice?.status?.isRecording || false;
@@ -518,12 +522,25 @@ wss.on('connection', ws => {
                 saveDevicesToFile();
                 broadcastToBrowsers({ type: 'deviceUpdate', payload: devices[deviceId] });
                 
+                // Handle IP address changes (even if device stays online)
+                // This ensures file transfer tasks use the correct IP after network changes
+                if (ipChanged) {
+                    console.log(`🔄 Device ${deviceId} IP changed: ${previousIp} → ${ip}`);
+                    
+                    // Update IP for all paused download tasks
+                    fileTransferService.updateDeviceIpForPausedTasks(
+                        deviceId, 
+                        ip, 
+                        data.status.fileServerPort || 8889
+                    );
+                }
+                
                 // If device just came online, trigger file operations
                 if (wasOffline && devices[deviceId].status?.fileServerEnabled) {
                     console.log(`🟢 Device ${deviceId} came online, triggering file operations...`);
                     
-                    // Update IP for paused tasks
-                    if (ip) {
+                    // Update IP for paused tasks (if not already updated by IP change handler)
+                    if (ip && !ipChanged) {
                         fileTransferService.updateDeviceIpForPausedTasks(
                             deviceId, 
                             ip, 
