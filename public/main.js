@@ -214,6 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
             card.querySelector('.delete-btn').addEventListener('click', () => deleteDevice(device.id));
             card.querySelector('.start-stream-btn').addEventListener('click', () => controlStream(device.id, 'start'));
             card.querySelector('.stop-stream-btn').addEventListener('click', () => controlStream(device.id, 'stop'));
+            card.querySelector('.record-btn').addEventListener('click', () => controlRecording(device.id, 'start'));
+            card.querySelector('.stop-record-btn').addEventListener('click', () => controlRecording(device.id, 'stop'));
             card.querySelector('.edit-name-btn').addEventListener('click', () => editDeviceName(device.id));
             
             // Clear completed transfers
@@ -369,16 +371,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle stream control buttons visibility
         const startBtn = card.querySelector('.start-stream-btn');
         const stopBtn = card.querySelector('.stop-stream-btn');
+        const deleteBtn = card.querySelector('.delete-btn');
+        const recordBtn = card.querySelector('.record-btn');
+        const stopRecordBtn = card.querySelector('.stop-record-btn');
 
-        if (device.isOnline && status.isStreamingReady) {
-            if (status.isStreaming) {
-                startBtn.style.display = 'none';
-                stopBtn.style.display = 'inline-block';
+        if (device.isOnline) {
+            deleteBtn.style.display = 'none'; // Hide delete button for online devices
+            if (status.isRecording) {
+                recordBtn.style.display = 'none';
+                stopRecordBtn.style.display = 'inline-block';
             } else {
-                startBtn.style.display = 'inline-block';
+                recordBtn.style.display = 'inline-block';
+                stopRecordBtn.style.display = 'none';
+            }
+            if (status.isStreamingReady) {
+                if (status.isStreaming) {
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                } else {
+                    startBtn.style.display = 'inline-block';
+                    stopBtn.style.display = 'none';
+                }
+            } else {
+                startBtn.style.display = 'none';
                 stopBtn.style.display = 'none';
             }
         } else {
+            // For offline devices, show delete button and hide others
+            deleteBtn.style.display = 'inline-block';
+            recordBtn.style.display = 'none';
+            stopRecordBtn.style.display = 'none';
             startBtn.style.display = 'none';
             stopBtn.style.display = 'none';
         }
@@ -516,6 +538,26 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(`Error ${action}ing stream:`, error);
             alert(t(action + 'StreamErrorAlert'));
+        }
+    }
+
+    // Control recording
+    async function controlRecording(id, action) {
+        const endpoint = action === 'start' ? '/start-recording' : '/stop-recording';
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const result = await response.json();
+            if (!result.success) {
+                alert(`${t(action + 'RecordErrorFail')}: ${t(result.message)}`);
+            }
+        } catch (error) {
+            console.error(`Error ${action}ing recording:`, error);
+            alert(t(action + 'RecordErrorAlert'));
         }
     }
 

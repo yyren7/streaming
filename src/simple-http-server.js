@@ -178,8 +178,8 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // API endpoints for stream control
-    if ((pathname === '/start-stream' || pathname === '/stop-stream') && req.method === 'POST') {
+    // API endpoints for stream and recording control
+    if ((pathname === '/start-stream' || pathname === '/stop-stream' || pathname === '/start-recording' || pathname === '/stop-recording') && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
@@ -187,7 +187,12 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             try {
                 const { id } = JSON.parse(body);
-                const action = pathname === '/start-stream' ? 'startStream' : 'stopStream';
+                let action;
+                if (pathname.includes('stream')) {
+                    action = pathname === '/start-stream' ? 'startStream' : 'stopStream';
+                } else {
+                    action = pathname === '/start-recording' ? 'startRecording' : 'stopRecording';
+                }
                 const command = { command: action };
 
                 let deviceWs = null;
