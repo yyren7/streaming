@@ -94,6 +94,13 @@ if ($existingContainer -match "srs-server") {
 Write-Host "    - Starting SRS container..."
 try {
     $configPath = Join-Path $scriptDir "config"
+    
+    # Manually convert Windows path to WSL path for Docker volume mounting
+    $srsConfWindowsPath = Join-Path $configPath "srs.conf"
+    $srsConfWslPath = $srsConfWindowsPath -replace '\\', '/' -replace ':', ''
+    $env:SRS_CONF_PATH = "/mnt/$($srsConfWslPath.Substring(0,1).ToLower())/$($srsConfWslPath.Substring(1))"
+    Write-Host "      [INFO] Manually converted srs.conf path for WSL: $($env:SRS_CONF_PATH)" -ForegroundColor Cyan
+
     Set-Location $configPath
     
     docker compose up -d 2>&1 | Out-Null

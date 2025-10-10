@@ -7,5 +7,5 @@ services:
       - "8080:8080" # HTTP-FLV port
       - "1985:1985" # HTTP API port
     volumes:
-      - ./srs.conf:/usr/local/srs/conf/srs.conf
+      - ${SRS_CONF_PATH}:/usr/local/srs/conf/srs.conf
     restart: always
