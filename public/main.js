@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const connectionText = document.getElementById('connection-text');
     const serverIpElement = document.getElementById('server-ip');
     const hotspotIpElement = document.getElementById('hotspot-ip');
-    hotspotIpElement.classList.add('ip-value'); // Ensure consistent styling
     const hotspotIpLine = document.getElementById('hotspot-ip-line');
     const networkModal = document.getElementById('network-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');

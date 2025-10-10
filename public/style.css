@@ -733,9 +733,9 @@ video {
 }
 
 .delete-btn {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--danger);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: rgba(225, 29, 72, 0.15);
+    color: #E11D48;
+    border: 1px solid rgba(225, 29, 72, 0.3);
     padding: 0.625rem 1.25rem;
     border-radius: 10px;
     cursor: pointer;
@@ -746,10 +746,11 @@ video {
 }
 
 .delete-btn:hover {
-    background: var(--danger);
+    background: #E11D48;
     color: white;
-    border-color: var(--danger);
+    border-color: #E11D48;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
 }
 
 .delete-btn:active {
@@ -777,27 +778,78 @@ video {
 }
 
 .start-stream-btn {
-    background: rgba(16, 185, 129, 0.15);
-    color: var(--success);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(5, 150, 105, 0.15);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.3);
 }
 
 .start-stream-btn:hover {
-    background: var(--success);
+    background: #059669;
     color: white;
-    border-color: var(--success);
+    border-color: #059669;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
 .stop-stream-btn {
-    background: rgba(245, 158, 11, 0.15);
-    color: var(--warning);
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(139, 92, 246, 0.15);
+    color: #8B5CF6;
+    border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .stop-stream-btn:hover {
-    background: var(--warning);
+    background: #8B5CF6;
     color: white;
-    border-color: var(--warning);
+    border-color: #8B5CF6;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.record-btn,
+.stop-record-btn {
+    border: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: none; /* Hidden by default, controlled by JS */
+}
+
+.record-btn:hover,
+.stop-record-btn:hover {
+    transform: translateY(-1px);
+}
+
+.record-btn:active,
+.stop-record-btn:active {
+    transform: translateY(0);
+}
+
+.record-btn {
+    background: rgba(249, 115, 22, 0.15);
+    color: #F97316;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.record-btn:hover {
+    background: #F97316;
+    color: white;
+    border-color: #F97316;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.stop-record-btn {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0EA5E9;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.stop-record-btn:hover {
+    background: #0EA5E9;
+    color: white;
+    border-color: #0EA5E9;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
 /* Responsive Design */
@@ -1360,9 +1412,9 @@ video {
 .scan-files-btn {
     padding: 0.625rem 1.25rem;
     border-radius: 10px;
-    border: 1px solid rgba(251, 146, 60, 0.3);
-    background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 146, 60, 0.05) 100%);
-    color: #fb923c;
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    background: rgba(217, 119, 6, 0.15);
+    color: #D97706;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
@@ -1370,10 +1422,11 @@ video {
 }
 
 .scan-files-btn:hover {
-    background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(251, 146, 60, 0.1) 100%);
-    border-color: #fb923c;
+    background: #D97706;
+    color: white;
+    border-color: #D97706;
     transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 /* Modal Styles */

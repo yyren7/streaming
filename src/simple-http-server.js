@@ -383,14 +383,31 @@ const fileTransferService = new FileTransferService(
 // Scan device files periodically (every 2 minutes)
 // This is a backup mechanism; primary scanning happens when devices come online
 setInterval(async () => {
+    console.log('🔍 Running periodic 15-second file scan...');
+    const allDeviceIds = Object.keys(devices);
+
+    if (allDeviceIds.length === 0) {
+        console.log('   -> No devices registered, skipping scan.');
+        return;
+    }
+
+    console.log(`   -> Checking ${allDeviceIds.length} registered device(s):`);
+    allDeviceIds.forEach(id => {
+        const device = devices[id];
+        const isOnline = device.isOnline || false;
+        const fileServerEnabled = device.status?.fileServerEnabled || false;
+        console.log(`      - Device ${id}: Online=${isOnline}, FileServer=${fileServerEnabled}`);
+    });
+
     const onlineDevices = Object.values(devices).filter(d => d.isOnline && d.status?.fileServerEnabled);
     
     if (onlineDevices.length === 0) {
         // No online devices with file server enabled, skip scanning
+        console.log('   -> No devices met the criteria for scanning, skipping.');
         return;
     }
     
-    console.log(`🔍 Periodic file scan: checking ${onlineDevices.length} online devices...`);
+    console.log(`   -> Found ${onlineDevices.length} online device(s) with file server enabled.`);
     
     for (const device of onlineDevices) {
         // Ensure device has IP address
@@ -426,7 +443,7 @@ setInterval(async () => {
             console.log(`⚠️ Device ${device.id} is online but IP address is not available, skipping scan`);
         }
     }
-}, 10000); // Scan every 10s
+}, 15000); // Scan every 15 seconds
 
 wss.on('connection', ws => {
     console.log('✅ WebSocket client connected');
