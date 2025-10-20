@@ -1,43 +1,43 @@
 {
     "MP6MB25N6103466": {
         "id": "MP6MB25N6103466",
-        "lastSeen": "2025-10-09T08:07:01.034Z",
-        "isOnline": false,
+        "lastSeen": "2025-10-20T06:04:05.417Z",
+        "isOnline": true,
         "status": {
-            "batteryLevel": 62,
+            "batteryLevel": 95,
             "fileServerEnabled": true,
             "fileServerPort": 8889,
             "isCharging": false,
             "isOnline": true,
-            "isRecording": true,
-            "isStreaming": true,
+            "isRecording": false,
+            "isStreaming": false,
             "isStreamingReady": true,
             "recordingDurationMs": 0,
             "streamKey": "MP6MB25N6103466",
-            "wifiSignalStrength": -68
+            "wifiSignalStrength": -27
         },
-        "ip": "192.168.0.33",
+        "ip": "192.168.0.101",
         "deviceName": "device2",
-        "recordingStartTime": 1759997065871
+        "recordingStartTime": null
     },
     "MP6MB25N6104762": {
         "id": "MP6MB25N6104762",
-        "lastSeen": "2025-10-10T06:47:53.806Z",
+        "lastSeen": "2025-10-20T06:04:05.231Z",
         "isOnline": true,
         "status": {
-            "batteryLevel": 90,
+            "batteryLevel": 96,
             "fileServerEnabled": true,
             "fileServerPort": 8889,
-            "isCharging": true,
+            "isCharging": false,
             "isOnline": true,
             "isRecording": false,
             "isStreaming": false,
             "isStreamingReady": true,
             "recordingDurationMs": 0,
             "streamKey": "MP6MB25N6104762",
-            "wifiSignalStrength": -29
+            "wifiSignalStrength": -31
         },
-        "ip": "192.168.137.246",
+        "ip": "192.168.0.100",
         "recordingStartTime": null,
         "deviceName": "device1"
     }
