@@ -111,7 +111,7 @@ body::before {
     font-size: 0.875rem;
     color: var(--text-secondary);
     min-width: 120px;
-    text-align: right;
+    text-align: left;
     margin-right: 0.5rem;
 }
 

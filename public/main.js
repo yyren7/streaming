@@ -59,10 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let fileTransfers = {}; // File transfer task map
     const recordingTimers = {}; // Recording duration timers (interval IDs)
 
-    // 低延迟监控：追赶最新直播内容
+    // 低延迟监控：追赶最新直播内容并清理旧缓冲区
     function setupLowLatencyMonitor(player, videoElement, deviceId) {
-        const MAX_BUFFER_DELAY = 3; // 最大允许延迟3秒
+        const MAX_BUFFER_DELAY = 2; // 最大允许延迟2秒（更激进）
         const CHECK_INTERVAL = 1000; // 每秒检查一次
+        const BUFFER_CLEANUP_THRESHOLD = 1.5; // 超过1.5秒就清理旧缓冲区
         
         const intervalId = setInterval(() => {
             if (!flvPlayers[deviceId]) {
@@ -75,12 +76,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (buffered.length > 0) {
                     const currentTime = videoElement.currentTime;
                     const bufferedEnd = buffered.end(buffered.length - 1);
+                    const bufferedStart = buffered.start(0);
                     const delay = bufferedEnd - currentTime;
+                    const oldBufferDuration = currentTime - bufferedStart;
                     
                     // 如果延迟超过阈值，跳转到最新位置
                     if (delay > MAX_BUFFER_DELAY) {
                         console.log(`Device ${deviceId}: 延迟过大 (${delay.toFixed(2)}s)，跳转到最新位置`);
                         videoElement.currentTime = bufferedEnd - 0.5; // 跳到最新位置，留0.5秒缓冲
+                    }
+                    
+                    // 主动清理旧缓冲区（超过阈值的历史数据）
+                    if (oldBufferDuration > BUFFER_CLEANUP_THRESHOLD) {
+                        try {
+                            // 通过更新currentTime来触发浏览器清理旧缓冲区
+                            // 某些浏览器会自动清理已播放过的远端缓冲区
+                            const targetTime = currentTime;
+                            if (targetTime > bufferedStart + 1) {
+                                // 强制触发缓冲区更新
+                                videoElement.currentTime = targetTime;
+                            }
+                        } catch (cleanupError) {
+                            // 忽略清理错误
+                        }
                     }
                 }
             } catch (e) {
@@ -159,9 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const row = document.createElement('tr');
                 
                 let tags = '';
-                if (iface.isPhysical) tags += `<span class="tag physical">Physical</span>`;
-                if (iface.isHotspot) tags += `<span class="tag hotspot">Hotspot</span>`;
-                if (iface.isVirtual) tags += `<span class="tag virtual">Virtual</span>`;
+                if (iface.isPhysical) tags += `<span class="tag physical">${t('typePhysical')}</span>`;
+                if (iface.isHotspot) tags += `<span class="tag hotspot">${t('typeHotspot')}</span>`;
+                if (iface.isVirtual) tags += `<span class="tag virtual">${t('typeVirtual')}</span>`;
 
                 row.innerHTML = `
                     <td>${iface.name}</td>
@@ -172,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Failed to fetch network interfaces:', error);
-            networkInterfacesTableBody.innerHTML = `<tr><td colspan="3">Failed to load data.</td></tr>`;
+            networkInterfacesTableBody.innerHTML = `<tr><td colspan="3">${t('failedToLoadData')}</td></tr>`;
         }
     }
 
@@ -288,6 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
                 updateDeviceTransfers(card, device.id);
+            });
+            
+            // Update i18n texts for the newly created card
+            card.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (i18n[currentLang][key]) {
+                    element.textContent = i18n[currentLang][key];
+                }
             });
         }
 
@@ -485,17 +511,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     isLive: true,
                     url: streamUrl
                 }, {
-                    // 低延迟配置
-                    enableWorker: false,
-                    enableStashBuffer: false,  // 禁用缓存缓冲区
-                    stashInitialSize: 128,     // 减小初始缓存大小
+                    // 低延迟配置 - 最佳实践
+                    enableWorker: false,              // 禁用Web Worker，减少开销
+                    enableStashBuffer: false,         // 完全禁用内部Stash缓冲区
+                    stashInitialSize: 128,            // 最小化初始Stash大小（KB）
+                    
+                    // 直播流标识
                     isLive: true,
-                    lazyLoad: false,
-                    lazyLoadMaxDuration: 0.2,
+                    
+                    // 懒加载配置 - 激进设置
+                    lazyLoad: false,                  // 禁用懒加载
+                    lazyLoadMaxDuration: 0.2,         // 最小化懒加载时长
+                    lazyLoadRecoverDuration: 0.2,     // 快速恢复
+                    
+                    // Range请求支持
                     seekType: 'range',
-                    autoCleanupSourceBuffer: true,
-                    autoCleanupMaxBackwardDuration: 3,  // 只保留3秒历史数据
-                    autoCleanupMinBackwardDuration: 2,
+                    
+                    // SourceBuffer自动清理 - 核心配置
+                    autoCleanupSourceBuffer: true,     // 启用自动清理
+                    autoCleanupMaxBackwardDuration: 2, // 只保留2秒历史数据（减少到2秒）
+                    autoCleanupMinBackwardDuration: 1, // 最小保留1秒（减少到1秒）
+                    
+                    // 额外的缓冲控制
+                    fixAudioTimestampGap: false,       // 禁用音频时间戳修复，减少处理延迟
                 });
                 flvPlayer.attachMediaElement(videoElement);
                 flvPlayer.load();
