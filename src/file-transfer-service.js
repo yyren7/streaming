@@ -57,7 +57,11 @@ class FileTransferService {
         const fileListUrl = `http://${deviceIp}:${fileServerPort}/files`;
 
         try {
-            const response = await axios.get(fileListUrl, { timeout: 5000 });
+            // 增加超时时间到20秒，以应对文件列表较多的情况
+            // 保留GZIP压缩以减少网络传输数据量
+            const response = await axios.get(fileListUrl, { 
+                timeout: 20000
+            });
             const files = response.data;
             console.log(`📋 Device ${device.id} has ${files.length} files`);
             return files.map(file => ({
